@@ -20,6 +20,7 @@ int main()
     p;
     tree.Add(14);
     tree.Add(33);
+    tree.Add(10);
     tree.Remove(23);
     p;
     tree.Add(22);
@@ -29,4 +30,8 @@ int main()
     tree.Add(2);
     tree.Add(9);
     tree.Print();
+
+    putchar('\n');
+    Tree::PrintTree(&tree, 0);
+    getchar();
 }

@@ -1,3 +1,7 @@
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#define FOREGROUND_WHITE (FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE)
+
 #include <iostream>
 #include <vector>
 
@@ -8,6 +12,7 @@ public:
     Tree *left;
     Tree *right;
 
+    // Create a new root node.
     Tree()
     {
         value = 0;
@@ -15,6 +20,7 @@ public:
         right = nullptr;
     }
 
+    // Create a new root node.
     Tree(int value)
     {
         this->value = value;
@@ -22,11 +28,13 @@ public:
         right = nullptr;
     }
 
+    // Add a new node to the Tree.
     void Add(int value)
     {
         Add(new Tree(value));
     }
 
+    // Add a new node to the Tree.
     void Add(Tree *newnode)
     {
         Tree *current = this;
@@ -54,9 +62,16 @@ public:
             }
     }
 
+    // Remove a node from the Tree.
     void Remove(int value)
     {
-        Tree *torem = Find(value);
+        Remove(Find(value));
+    }
+
+    // Remove a node from the Tree.
+    void Remove(Tree *node)
+    {
+        Tree *torem = node;
         Tree *prev = FindPrev(torem);
 
         if (prev->left == torem)
@@ -65,16 +80,17 @@ public:
             prev->right = torem->right;
 
         std::vector<Tree *> v;
-        GetAllFrom(torem->left, v);
+        GetAllElements(torem->left, v);
         delete torem;
 
-        for (Tree *node : v)
+        for (Tree *n : v)
         {
-            printf("%p - %d\n", node, node->value);
-            Add(node);
+            printf("%p - %d\n", n, n->value);
+            Add(n);
         }
     }
 
+    // Return the first node with matching value or nullptr if no matching node is found.
     Tree *Find(int value)
     {
         Tree *current = this;
@@ -96,15 +112,17 @@ public:
             }
     }
 
-    Tree *FindPrev(Tree *treenode)
+    // Return the node before the selected node.
+    // If the node does not exist or if it is the root nullptr is returned.
+    Tree *FindPrev(Tree *node)
     {
         Tree *current = this;
-        if (current == treenode)
+        if (current == node)
             return nullptr;
 
         while (1)
         {
-            if (current->left == treenode || current->right == treenode)
+            if (current->left == node || current->right == node)
                 return current;
             if (value < current->value)
             {
@@ -123,33 +141,59 @@ public:
         }
     }
 
-    static void GetAllFrom(Tree *from, std::vector<Tree *> &v)
+    // Get all nodes from a Tree.
+    static void GetAllElements(Tree *firstnode, std::vector<Tree *> &v)
     {
-        if (from == nullptr)
+        if (firstnode == nullptr)
             return;
-        v.push_back(from);
-        GetAllFrom(from->left, v);
-        GetAllFrom(from->right, v);
+        v.push_back(firstnode);
+        GetAllElements(firstnode->left, v);
+        GetAllElements(firstnode->right, v);
     }
 
-    void Print()
+#pragma region Printing
+private:
+    static BOOL SetConsoleColor(WORD wAttributes)
     {
-        Tree::Print(this);
+        return SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), wAttributes);
     }
 
-#pragma region printing
+public:
+    // Print out the tree from the selected node.
+    // The num specifes the startign number to mark the tree levels.
+    static void PrintTree(Tree *node, int num)
+    {
+        PrintNode(node, num, '\0');
+    }
 
-    static void PrintRelations(Tree *node, int num)
+    static void PrintNode(Tree *node, int num, char c)
     {
         if (node == nullptr)
-        {
-            printf("\e[90m<empty>\e[0m\n");
             return;
-        }
-        printf("\e[1;37m%d\n\e[0;93mleft %d:\e[0m\n", node->value, num);
-        PrintRelations(node->left, num + 1);
-        printf("\e[93mright %d:\e[0m\n", num);
-        PrintRelations(node->right, num + 1);
+        for (int i = 0; i < num; i++)
+            putchar('\t');
+
+        SetConsoleColor(FOREGROUND_WHITE | FOREGROUND_INTENSITY);
+        if (c == '\0')
+            printf("%c 0:", 204);
+        else
+            printf("%c %c%d:", 192, c, num);
+        printf(" %d %c ", node->value, 26);
+        SetConsoleColor(FOREGROUND_INTENSITY);
+        if (node->left == nullptr)
+            printf("l: <empty> ");
+        else
+            printf("l: %d ", node->left->value);
+
+        if (node->right == nullptr)
+            printf("r: <empty>");
+        else
+            printf("r: %d", node->right->value);
+        SetConsoleColor(FOREGROUND_WHITE);
+        putchar('\n');
+
+        PrintNode(node->left, num + 1, 'l');
+        PrintNode(node->right, num + 1, 'r');
     }
 
 private:
@@ -160,7 +204,7 @@ private:
     } node;
     std::vector<node> nodes;
 
-    int findnode(std::vector<node> &nodes, Tree *address)
+    static int findnode(std::vector<node> &nodes, Tree *address)
     {
         for (int i = 0; i < nodes.size(); i++)
             if (nodes.at(i).address == address)
@@ -169,10 +213,19 @@ private:
     }
 
 public:
-    void Print(Tree *tree)
+    // Print out changes in the tree since the last Print.
+    // Bug: Too many removes between prints can lead to skipped elements.
+    void Print()
+    {
+        Print(this);
+    }
+
+    // Print out changes in the tree since the last Print.
+    // Bug: Too many removes between prints can lead to skipped elements.
+    static void Print(Tree *tree)
     {
         std::vector<Tree *> v;
-        Tree::GetAllFrom(tree, v);
+        GetAllElements(tree, v);
 
         for (size_t i = 0; true; i++)
         {
@@ -180,24 +233,28 @@ public:
             node *last;
 
             current = i < v.size() ? v.at(i) : nullptr;
-            last = i < nodes.size() ? &nodes.at(i) : nullptr;
+            last = i < tree->nodes.size() ? &(tree->nodes).at(i) : nullptr;
 
             if (current == nullptr && last == nullptr)
                 break;
 
-            if (findnode(nodes, current) == -1)
+            if (findnode(tree->nodes, current) == -1 && current != nullptr)
             {
-                printf("\e[32m%p - %d\e[0m\n", current, current->value);
-                nodes.push_back({current, current->value});
+                SetConsoleColor(FOREGROUND_GREEN);
+                printf("%p - %d\n", current, current->value);
+                SetConsoleColor(FOREGROUND_WHITE);
+                tree->nodes.push_back({current, current->value});
             }
             else if (find(v.begin(), v.end(), last->address) == v.end())
             {
-                int index = findnode(nodes, last->address);
-                printf("\e[31m%p - %d\e[0m\n", last, nodes.at(index).value);
-                nodes.erase(nodes.begin() + index);
+                int index = findnode(tree->nodes, last->address);
+                SetConsoleColor(FOREGROUND_RED);
+                printf("%p - %d\n", last, tree->nodes.at(index).value);
+                SetConsoleColor(FOREGROUND_WHITE);
+                tree->nodes.erase(tree->nodes.begin() + index);
                 i--;
             }
-            else
+            else if (current != nullptr)
                 printf("%p - %d\n", current, current->value);
         }
     }
