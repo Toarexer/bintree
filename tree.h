@@ -12,7 +12,7 @@ public:
     Tree *left;
     Tree *right;
 
-    // Create a new root node.
+    // Creates a new root node.
     Tree()
     {
         value = 0;
@@ -20,7 +20,7 @@ public:
         right = nullptr;
     }
 
-    // Create a new root node.
+    // Creates a new root node.
     Tree(int value)
     {
         this->value = value;
@@ -28,13 +28,13 @@ public:
         right = nullptr;
     }
 
-    // Add a new node to the Tree.
+    // Adds a new node to the Tree.
     void Add(int value)
     {
         Add(new Tree(value));
     }
 
-    // Add a new node to the Tree.
+    // Adds a new node to the Tree.
     void Add(Tree *newnode)
     {
         Tree *current = this;
@@ -62,13 +62,13 @@ public:
             }
     }
 
-    // Remove a node from the Tree.
+    // Removes a node from the Tree.
     void Remove(int value)
     {
         Remove(Find(value));
     }
 
-    // Remove a node from the Tree.
+    // Removes a node from the Tree.
     void Remove(Tree *node)
     {
         Tree *torem = node;
@@ -90,7 +90,7 @@ public:
         }
     }
 
-    // Return the first node with matching value or nullptr if no matching node is found.
+    // Returns the first node with matching value or nullptr if no matching node is found.
     Tree *Find(int value)
     {
         Tree *current = this;
@@ -112,7 +112,7 @@ public:
             }
     }
 
-    // Return the node before the selected node.
+    // Returns the node before the selected node.
     // If the node does not exist or if it is the root nullptr is returned.
     Tree *FindPrev(Tree *node)
     {
@@ -141,6 +141,38 @@ public:
         }
     }
 
+    // Returns the number of nodes.
+    int Count()
+    {
+        return CountFrom(this);
+    }
+
+    // Returns the number of nodes starting from the specfied one.
+    static int CountFrom(Tree *node)
+    {
+        if (node == nullptr)
+            return 0;
+        return 1 + CountFrom(node->left) + CountFrom(node->right);
+    }
+
+    // Returns the node with the bigest value.
+    Tree *GetBigest()
+    {
+        Tree *current = this;
+        while (current != nullptr)
+            current = current->right;
+        return current;
+    }
+
+    // Returns the node with the smallest value.
+    Tree *GetSmallest()
+    {
+        Tree *current = this;
+        while (current != nullptr)
+            current = current->left;
+        return current;
+    }
+
     // Get all nodes from a Tree.
     static void GetAllElements(Tree *firstnode, std::vector<Tree *> &v)
     {
@@ -159,8 +191,8 @@ private:
     }
 
 public:
-    // Print out the tree from the selected node.
-    // The num specifes the startign number to mark the tree levels.
+    // Prints out the tree starting from the selected node.
+    // The num specifes the starting number to mark the tree levels.
     static void PrintTree(Tree *node, int num)
     {
         PrintNode(node, num, '\0');
@@ -213,15 +245,13 @@ private:
     }
 
 public:
-    // Print out changes in the tree since the last Print.
-    // Bug: Too many removes between prints can lead to skipped elements.
+    // Prints out changes in the tree since the last Print.
     void Print()
     {
         Print(this);
     }
 
-    // Print out changes in the tree since the last Print.
-    // Bug: Too many removes between prints can lead to skipped elements.
+    // Prints out changes in the tree since the last Print.
     static void Print(Tree *tree)
     {
         std::vector<Tree *> v;
@@ -258,6 +288,5 @@ public:
                 printf("%p - %d\n", current, current->value);
         }
     }
-
 #pragma endregion
 };

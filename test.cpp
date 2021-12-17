@@ -2,7 +2,9 @@
 #include <algorithm>
 #include "tree.h"
 
-#define p tree.Print(); putchar('\n')
+#define p         \
+    tree.Print(); \
+    putchar('\n')
 
 int main()
 {
@@ -33,5 +35,6 @@ int main()
 
     putchar('\n');
     Tree::PrintTree(&tree, 0);
+    printf("\nCount: %d\n", tree.Count());
     getchar();
 }

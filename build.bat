@@ -1,1 +1,1 @@
-g++ tree.cpp -o bintree.exe
+g++ test.cpp -o bintree.exe
