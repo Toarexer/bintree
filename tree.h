@@ -13,20 +13,10 @@ public:
     Tree *right;
 
     // Creates a new root node.
-    Tree()
-    {
-        value = 0;
-        left = nullptr;
-        right = nullptr;
-    }
+    Tree() : value(0), left(nullptr), right(nullptr) {}
 
     // Creates a new root node.
-    Tree(int value)
-    {
-        this->value = value;
-        left = nullptr;
-        right = nullptr;
-    }
+    Tree(int value) : value(value), left(nullptr), right(nullptr) {}
 
     // Adds a new node to the Tree.
     void Add(int value)
@@ -84,10 +74,7 @@ public:
         delete torem;
 
         for (Tree *n : v)
-        {
-            printf("%p - %d\n", n, n->value);
             Add(n);
-        }
     }
 
     // Returns the first node with matching value or nullptr if no matching node is found.
