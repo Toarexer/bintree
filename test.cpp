@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
-#include "tree.h"
+//#include "tree.h"
+#include "lib\bintreelib.h"
 
 #define p         \
     tree.Print(); \
