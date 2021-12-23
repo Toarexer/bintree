@@ -29,8 +29,7 @@ void Tree::Add(Tree *newnode)
                 current->left = newnode;
                 return;
             }
-            else
-                current = current->left;
+            current = current->left;
         }
         else
         {
@@ -39,8 +38,7 @@ void Tree::Add(Tree *newnode)
                 current->right = newnode;
                 return;
             }
-            else
-                current = current->right;
+            current = current->right;
         }
 }
 

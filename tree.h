@@ -37,8 +37,7 @@ public:
                     current->left = newnode;
                     return;
                 }
-                else
-                    current = current->left;
+                current = current->left;
             }
             else
             {
@@ -47,8 +46,7 @@ public:
                     current->right = newnode;
                     return;
                 }
-                else
-                    current = current->right;
+                current = current->right;
             }
     }
 
@@ -231,6 +229,14 @@ private:
         return -1;
     }
 
+    static bool containsaddr(Tree *addr, std::vector<Tree *> &v)
+    {
+        for (Tree *a : v)
+            if (addr == a)
+                return true;
+        return false;
+    }
+
 public:
     // Prints out changes in the tree since the last Print.
     void Print()
@@ -262,7 +268,7 @@ public:
                 SetConsoleColor(FOREGROUND_WHITE);
                 tree->nodes.push_back({current, current->value});
             }
-            else if (find(v.begin(), v.end(), last->address) == v.end())
+            else if (!containsaddr(last->address, v))
             {
                 int index = findnode(tree->nodes, last->address);
                 SetConsoleColor(FOREGROUND_RED);
