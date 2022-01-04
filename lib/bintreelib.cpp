@@ -49,17 +49,17 @@ void Tree::Remove(int value)
 
 void Tree::Remove(Tree *node)
 {
-    Tree *torem = node;
-    Tree *prev = FindPrev(torem);
+    Tree *prev = FindPrev(node);
 
-    if (prev->left == torem)
-        prev->left = torem->right;
+    if (prev->left == node)
+        prev->left = node->right;
     else
-        prev->right = torem->right;
+        prev->right = node->right;
 
     std::vector<Tree *> v;
-    GetAllElements(torem->left, v);
-    delete torem;
+    GetAllElements(node->left, v);
+    delete node->left;
+    delete node;
 
     for (Tree *n : v)
         Add(n);
@@ -96,7 +96,7 @@ Tree *Tree::FindPrev(Tree *node)
     {
         if (current->left == node || current->right == node)
             return current;
-        if (value < current->value)
+        if (node->value < current->value)
         {
             if (current->left == nullptr)
                 return nullptr;
